@@ -106,11 +106,11 @@ SQL was used primarily for testing the data
 # Visualization
 ## Results
 
-This shows the Summary Dashboard
+![This-shows-the-Summary-Dashboard](assets/images/LPPMS-Summary.png)
 
-This shows the Overview Dashboard
+![This-shows-the-Overview-Dashboard](assets/images/LPPMS-Overview.png)
 
-This shows the Details Dashboard
+![This-shows-the-Details-Dashboard](assets/images/LPPMS-Details.png)
 
 ## Measures
 ### Top KPIs required
