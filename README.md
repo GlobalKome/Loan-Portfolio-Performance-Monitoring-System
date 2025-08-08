@@ -16,11 +16,12 @@ This project aims to develop a comprehensive dashboard suite to monitor the heal
 - [Testing](#testing)
 - [Visualization](#visualization)
    - [Results](#results)
+- [Findings](#findings)
 - [Recommendations](#recommendations)
 - [Conclusion](#conclusion)
 
 # Executive Summary
-ZenithCore Bank aims to enhance visibility into its expanding retail loan portfolio. This project provides an interactive dashboard suite that enables executive leadership and lending teams to monitor loan applications, assess repayment performance, and proactively manage risk exposure. The solution enhances data-driven decision-making by offering clear insights through three tailored dashboards: Summary, Overview, and Details.
+Phoenix Bank aims to enhance visibility into its expanding retail loan portfolio. This project provides an interactive dashboard suite that enables executive leadership and lending teams to monitor loan applications, assess repayment performance, and proactively manage risk exposure. The solution enhances data-driven decision-making by offering clear insights through three tailored dashboards: Summary, Overview, and Details.
 
 # Objective
   - Develop dynamic dashboards to track retail loan KPIs
@@ -30,7 +31,7 @@ ZenithCore Bank aims to enhance visibility into its expanding retail loan portfo
   - Improve efficiency in loan performance monitoring
 
 # User Story
-Mrs. Adaobi Okonkwo, the Head of Retail Lending at ZenithCore Bank, is responsible for overseeing the performance of thousands of consumer loans issued by the bank. With limited visibility into how these loans are performing across customer types, states, and purposes, she needs an efficient way to track loan application trends, repayment patterns, and risk indicators in one place.
+Mrs. Adaobi Okonkwo, the Head of Retail Lending at Phoenix Bank, is responsible for overseeing the performance of thousands of consumer loans issued by the bank. With limited visibility into how these loans are performing across customer types, states, and purposes, she needs an efficient way to track loan application trends, repayment patterns, and risk indicators in one place.
 
 To solve this, she contracted me, a data analyst, to develop a Loan Portfolio Performance Monitoring System made up of three dashboards:
   A Summary Dashboard for executive insights,
@@ -100,9 +101,6 @@ What steps were taken to clean and shape the data?
 - emp_title field was found to be a negligible field hence nothing was done to it
 - The fields with wrong data type were fixed in SQL
 
-# Testing
-SQL was used primarily for testing the data
-
 # Visualization
 ## Results
 
@@ -116,14 +114,57 @@ SQL was used primarily for testing the data
 ### Top KPIs required
 ### Total Loan Applications
 ```sql
-
+Total Loan Applications = COUNT(bank_loan_data[id])
 ```
 ### Total Funded Amount
 ```sql
-
+Total Funded Amount = SUM(bank_loan_data[loan_amount])
 ```
-
-### Total Received Amount
+### Total Received Amount 
+ ```sql
+ Total Amount Received = SUM(bank_loan_data[total_payment])
+ ``` 
+### Average Interest Rate
 ```sql
-
+Avg Interest Rate = AVERAGE(bank_loan_data[int_rate])
 ```
+### Average DTI
+```sql
+Avg Dti = AVERAGE(bank_loan_data[dti])
+```
+### Good Loan %
+```sql
+Good Loan % = (CALCULATE([Total Loan Applications], bank_loan_data[Good vs Bad Loan] = "Good Loan")) / [Total Loan Applications]
+```
+### Bad Loan %
+```sql
+Bad Loan % = (CALCULATE([Total Loan Applications], bank_loan_data[Good vs Bad Loan] = "Bad Loan")) / [Total Loan Applications]
+```
+# Testing
+SQL was used primarily for testing the data
+
+# Findings
+- The number of loan applicants categorized as current and fully paid is much higher than those categorized as charged off.
+- There is a clear upward trend in loan applications, funded amounts, and amounts received.
+- Borrowers with 10+ years of work experience take larger loans.
+- The top five loan purposes are debt consolidation, credit card, other, home improvement, and major purchase.
+  
+# Recommendations
+The dashboards have been successfully developed to provide a centralized and interactive view of the bank’s retail loan performance. While the dataset holds more insights than covered here, the following recommendations are based on notable patterns that align with the client’s need for better institutional visibility and decision-making.
+
+- Maintain existing credit approval criteria in these high-performing segments and use the Overview Dashboard to track them quarterly. Consider targeted retention offers for reliable borrowers to encourage repeat business.
+- Align staffing, loan processing capacity, and marketing resources with this growth trend. Consider scaling automated credit checks and loan processing workflows to meet rising demand without increasing operational bottlenecks.
+- Treat this group as a prime borrower segment. Consider targeted premium loan products or preferential interest rates for long-tenure professionals to increase market share in this low-risk category.
+- Use these categories as anchors for specialized lending packages with tailored repayment options. Marketing campaigns can focus on these high-demand purposes to maximize uptake.
+
+# Conclusion
+The Loan Portfolio Performance Monitoring System now provides Phoenix Bank with the tools to translate raw lending data into actionable insights. These findings confirm that the bank is performing strongly in repayment rates, experiencing portfolio growth, and has clear opportunities to refine loan offerings for targeted borrower groups.
+
+By continuously using these dashboards, management can:
+
+- Detect risk patterns early
+- Focus on profitable borrower segments
+- Adjust product strategies based on demand trends
+- Strengthen the institution’s data-driven decision-making culture
+
+While these insights are valuable, they represent only part of the broader analytical capabilities now available through the dashboard suite. With ongoing monitoring and deeper exploration, Phoenix Bank can further enhance its lending strategy and portfolio performance.
