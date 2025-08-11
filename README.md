@@ -104,11 +104,11 @@ What steps were taken to clean and shape the data?
 # Visualization
 ## Results
 
-![This-shows-the-Summary-Dashboard](assets/images/LPPMS-Summary.png)
+![This-shows-the-Summary-Dashboard](Assets/images/LPPMS-Summary.png)
 
-![This-shows-the-Overview-Dashboard](assets/images/LPPMS-Overview.png)
+![This-shows-the-Overview-Dashboard](Assets/images/LPPMS-Overview.png)
 
-![This-shows-the-Details-Dashboard](assets/images/LPPMS-Details.png)
+![This-shows-the-Details-Dashboard](Assets/images/LPPMS-Details.png)
 
 ## Measures
 ### Top KPIs required
