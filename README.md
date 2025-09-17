@@ -112,36 +112,260 @@ What steps were taken to clean and shape the data?
 
 ## Measures
 ### Top KPIs required
-### Total Loan Applications
-```sql
+``` sql
 Total Loan Applications = COUNT(bank_loan_data[id])
-```
-### Total Funded Amount
-```sql
+
 Total Funded Amount = SUM(bank_loan_data[loan_amount])
-```
-### Total Received Amount 
- ```sql
- Total Amount Received = SUM(bank_loan_data[total_payment])
- ``` 
-### Average Interest Rate
-```sql
+
+Total Amount Received = SUM(bank_loan_data[total_payment])
+
 Avg Interest Rate = AVERAGE(bank_loan_data[int_rate])
-```
-### Average DTI
-```sql
+
 Avg Dti = AVERAGE(bank_loan_data[dti])
-```
-### Good Loan %
-```sql
+
 Good Loan % = (CALCULATE([Total Loan Applications], bank_loan_data[Good vs Bad Loan] = "Good Loan")) / [Total Loan Applications]
-```
-### Bad Loan %
-```sql
+
 Bad Loan % = (CALCULATE([Total Loan Applications], bank_loan_data[Good vs Bad Loan] = "Bad Loan")) / [Total Loan Applications]
 ```
 # Testing
 SQL was used primarily for testing the data
+``` sql
+--Calculating KPIs
+--1. Total loan applications
+SELECT 
+	COUNT(id) AS Total_loan_application 
+FROM bank_loan_data
+
+--2. MTD loan application changes
+SELECT 
+	COUNT(id) AS MTD_TLA
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 12
+
+--PMTD loan application changes
+SELECT 
+	COUNT(id) AS PMTD_TLA
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 11
+
+--MOM changes = (MTD-PMTD/PMTD)
+
+
+--3. Total funded amount 
+SELECT 
+	SUM(loan_amount) AS Total_funded_amount 
+FROM bank_loan_data
+
+--MTD changes
+SELECT
+	SUM(loan_amount) AS MTD_TFA
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 12
+
+--PMTD changes
+SELECT
+	SUM(loan_amount) AS PMTD_TFA
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 11
+
+--MOM changes
+
+
+--4. Total amount received
+SELECT 
+	SUM(total_payment) AS Total_amount_received
+FROM bank_loan_data
+
+--MTD changes
+SELECT 
+	SUM(total_payment) AS MTD_TAR
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 12
+
+--PMTD changes
+SELECT 
+	SUM(total_payment) AS PMTD_TAR
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 11
+
+--MOM changes
+
+--5. Average Interest Rate
+SELECT 
+	ROUND((AVG(int_rate) * 100), 2) AS Average_Interest_Rate
+FROM bank_loan_data
+
+--MTD changes
+SELECT 
+	ROUND((AVG(int_rate) * 100), 2) AS MTD_AIR
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 12
+
+--PMTD changes
+SELECT 
+	ROUND((AVG(int_rate) * 100), 2) AS PMTD_AIR
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 11
+
+--MOM changes
+
+--6. Average Debt to interest ratio
+SELECT
+	ROUND((AVG(dti) * 100), 2) AS Average_dti
+FROM bank_loan_data
+
+--MTD changes
+SELECT
+	ROUND((AVG(dti) * 100), 2) AS MTD_Avg_dti
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 12
+
+--PMTD changes
+SELECT
+	ROUND((AVG(dti) * 100), 2) AS PMTD_Avg_dti
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 11
+
+--MOM changes
+
+
+--Good loan application % loans that are "current" and "fully_paid"
+SELECT
+	(COUNT(CASE 
+			WHEN loan_status = 'Fully Paid' OR loan_status = 'Current' 
+			THEN id END) * 100)
+	/
+	COUNT(id) AS Good_loan_percentage
+FROM bank_loan_data
+
+--Total Good loan applications
+SELECT 
+	COUNT(id) AS Good_loan_application 
+FROM bank_loan_data
+WHERE loan_status = 'Fully Paid' OR loan_status = 'Current'
+
+
+--Total Funded amount
+SELECT
+	SUM(loan_amount) AS Good_loan_funded_amount
+FROM bank_loan_data
+WHERE loan_status = 'Fully Paid' OR loan_status = 'Current'
+
+
+--Good loan received amount
+SELECT
+	SUM(total_payment) AS Good_loan_received_amount
+FROM bank_loan_data
+WHERE loan_status = 'Fully Paid' OR loan_status = 'Current'
+
+--Bad loan percentage
+SELECT
+	(COUNT(CASE
+			WHEN loan_status = 'Charged Off' THEN id END) * 100)
+	/
+	COUNT(id) AS Bad_loan_percentage
+FROM bank_loan_data
+
+--Total bad loan
+SELECT
+	COUNT(id) AS Bad_loan_applications
+FROM bank_loan_data
+WHERE loan_status = 'Charged Off'
+
+--Bad loan funded amount
+SELECT
+	SUM(loan_amount) AS Bad_loan_funded_amount
+FROM bank_loan_data
+WHERE loan_status = 'Charged Off'
+
+--Bad loan applications
+SELECT
+	SUM(total_payment) AS Bad_loan_amount_received
+FROM bank_loan_data
+WHERE loan_status = 'Charged Off'
+
+
+--Loan status grid view
+SELECT
+	loan_status,
+	COUNT(id) AS Total_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount,
+	ROUND(AVG(int_rate * 100), 2) AS Interest_rate,
+	ROUND(AVG(dti * 100), 2) AS DTI
+FROM bank_loan_data
+GROUP BY loan_status
+
+--MTD
+SELECT
+	loan_status,
+	SUM(total_payment) AS MTD_total_payment_received,
+	SUM(loan_amount) AS MTD_total_funded_amount
+FROM bank_loan_data
+WHERE MONTH(issue_date) = 12
+GROUP BY loan_status
+
+--Monthly trend by issue date
+SELECT
+	MONTH(issue_date) AS Month_number,
+	DATENAME(MONTH, issue_date) AS Month_name,
+	COUNT(id) AS Total_loan_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount
+FROM bank_loan_data
+GROUP BY MONTH(issue_date), DATENAME(MONTH, issue_date)
+ORDER BY MONTH(issue_date) 
+
+--Regional analysis by state
+SELECT
+	address_state,
+	COUNT(id) AS Total_loan_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount
+FROM bank_loan_data
+GROUP BY address_state
+ORDER BY address_state
+
+--Loan term analysis
+SELECT
+	term,
+	COUNT(id) AS Total_loan_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount
+FROM bank_loan_data
+GROUP BY term
+ORDER BY term
+
+--Employee_length analysis
+SELECT
+	emp_length,
+	COUNT(id) AS Total_loan_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount
+FROM bank_loan_data
+GROUP BY emp_length
+ORDER BY emp_length
+
+--Loan purpose breakdown
+SELECT
+	purpose,
+	COUNT(id) AS Total_loan_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount
+FROM bank_loan_data
+GROUP BY purpose
+ORDER BY purpose
+
+--Home ownership analysis
+SELECT
+	home_ownership,
+	COUNT(id) AS Total_loan_applications,
+	SUM(total_payment) AS Total_amount_received,
+	SUM(loan_amount) AS Total_funded_amount
+FROM bank_loan_data
+GROUP BY home_ownership
+ORDER BY home_ownership
+```
 
 # Findings
 - The number of loan applicants categorized as current and fully paid is much higher than those categorized as charged off.
